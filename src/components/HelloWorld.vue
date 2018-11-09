@@ -1,6 +1,6 @@
 <template>
 
-  <el-aside style="width: 15%">
+  <el-aside style="width: 200px;">
       <div class="touxiang">
       <img src="../image/66efb8410b68a661.jpg" class="image" alt="">
         <p style="margin-top: 5px">杨龙婷</p>
@@ -80,6 +80,7 @@ export default {
     background: #ffffff;
     overflow:auto;
     overflow-x: hidden;
+    border-right:1px solid #eee ;
   }
   .el-menu-item{
     margin-top: 15px;
@@ -97,7 +98,7 @@ export default {
   .image{
     width: 80px;
     height: 80px;
-    border-radius:100%;
+    border-radius:40px;
 
   }
    .image:hover{
