@@ -13,7 +13,7 @@
       <ul class="content">
         <li v-for="(i,key) in tableData">
           <el-col :span="20" style="text-align: left;padding-left: 80px">
-          <p :span="20">{{i.text}}</p>
+          <p :span="20"><a href="javascript:void(0)">{{i.text}}</a></p>
           </el-col>
           <el-col :span="4">
           <p :span="4" style="text-align: center;padding-right: 40px;">{{i.date}}</p>
@@ -28,124 +28,93 @@
         </el-input>
       </div>
       <div class="fenye">
-
+        <span style="color:#333;font-size: 10px;line-height: 80px;margin-left: 10px;display: block;float: left;">本页共<span v-html="zongshu" style="margin: 0 5px"></span>条博文</span>
+      <div style="float: left;margin-left: 10px;">
+        <el-button icon="el-icon-arrow-left" @click.native="getPage('-')" circle style="margin-top: 20px;float: left;"></el-button>
+        <el-input v-model="input" class="fenyeInput" placeholder="请输入内容" min="1" max=""></el-input>
+        <el-button icon="el-icon-arrow-right" @click.native="getPage('+')" circle style="margin-top: 20px;float: left;margin-left: 10px"></el-button>
       </div>
-
+      </div>
     </el-footer>
     <div class="login"><img src="../image/5-160914192R5-50.gif" alt=""></div>
   </el-container>
-
 </template>
-
 <script>
   import $ from 'jquery'
+  import get from "../fengzhuang"
     export default {
         name: "mokuai-you",
       data(){
           return{
             toubu:[],
             tableData:[],
-            neirong:""
+            neirong:"",
+            input:"1",
+            max:"1",
+            zongshu:"1",
+            type:"ALL"
           }
       },
       methods:{
-      getContent(ziji){
-        var _this=this;
-        var neirong=ziji.srcElement.innerText;
-        if(neirong!=""){
+        getPage(fuhao){
+          var _this=this;
+         if(fuhao=="-"){
+           if(this.input!=1){
+             this.input--;
+           }else{
+             return false
+           }
+         }else if(fuhao=="+"){
+           if(this.input!=this.max){
+             this.input++;
+           }else{
+             return false
+           }
+         }
+         get.getPage(this.input);
+        },
+      getContent(ziji) {
+        var _this = this;
+        var neirong = ziji.srcElement.innerText;
+        _this.type=neirong;
           console.log(neirong);
-          $.ajax({
-            url:"http://localhost:3000/content",
-            type:"get",
-            data:{neirong:neirong},
-            beforeSend: function(){
-              $(".login").css("display","block");
-            },
-            success:function (res) {
-              if(res.msg=="成功"){
-                _this.tableData=res.data;
-                console.log(_this.tableData);
-                $(".login").css("display","none");
-              }else{
-                console.log("失败");
-              }
-
-            },
-            error:function (e) {
-              console.log("访问失败dwadawdwadawwdwadwadwa");
-            }
-          })
-        }
+          get.getConten(neirong,_this);
       },
         getSearch(){
           var _this=this;
           var tiaojian=this.neirong;
-            $.ajax({
-              url:"http://localhost:3000/getSearch",
-              type:"get",
-              data:{neirong:tiaojian},
-              beforeSend: function(){
-                $(".login").css("display","block");
-              },
-              success:function (res) {
-                if(res.msg=="成功"){
-                  _this.tableData=res.data;
-                  console.log(_this.tableData);
-                  $(".login").css("display","none");
-                }else{
-                  console.log("失败");
-                  $(".login").css("display","none");
-                }
-
-              },
-              error:function (e) {
-                console.log("访问失败dwadawdwadawwdwadwadwa");
-              }
-            })
+           get.getFind(tiaojian,_this);
         }
-
       },
       mounted(){
-          var _this=this
-          $.ajax({
-            url:"http://localhost:3000/",
-            type:"get",
-            beforeSend: function(){
-              $(".login").css("display","block");
-            },
-            success:function (res) {
-              _this.toubu=res.data;
-              $(".login").css("display","none");
-            },
-            error:function (e) {
-              console.log("访问失败");
-            },
-          })
-        $.ajax({
-          url:"http://localhost:3000/content",
-          type:"get",
-          data:{neirong:""},
-          beforeSend: function(){
-            $(".login").css("display","block");
-          },
-          success:function (res) {
-            _this.tableData=res.data;
-            $(".login").css("display","none");
-          },
-          error:function (e) {
-            console.log("访问失败");
-          }
-        })
-      }
+          var _this=this;
+          get.getHead(_this);
+          get.getConten(_this.type,_this);
+        }
     }
 </script>
 
 <style scoped>
+  .fenyeInput{
+    width: 35%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 10px;
+  }
+  .fenye{
+    width: 40%;
+    height: 100%;
+    float: left;
+  }
+  a{
+    text-decoration: none;
+    color:#333;
+  }
   .el-row .el-button{
     margin-top: 10px;
   }
   .search{
-    width: 70%;
+    width: 55%;
     float:left;
   }
   .login{
@@ -178,7 +147,7 @@
       width: 100%;
       list-style: none;
       min-height:250px;
-      height: 250px;
+      height: 350px;
       overflow-y:auto;
       padding: 0;
       margin: 0;
